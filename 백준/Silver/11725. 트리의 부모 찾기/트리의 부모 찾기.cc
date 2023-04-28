@@ -42,20 +42,21 @@ void check(int current)
 		parent[current] = v[current].back();
 		return;
 	} // 맨 밑이면 끝임
-	// while (v[current].empty() == false){
-	// 	if (parent[node] == 0) {
+	 while (v[current].empty() == false){
+	 	int node = v[current].back();
+		if (parent[node] == 0) {
+	 		parent[node] = current;
+	 		check(node);
+	 	}
+	 	v[current].pop_back();
+	 }
+	// for(int i=0;i<(int)v[current].size();i++){
+	// 	int node = v[current][i];
+	// 	if (parent[node]==0)
+	// 	{
 	// 		parent[node] = current;
-	// 		check(node, n);
+	// 		check(node);
 	// 	}
-	// 	v[current].pop_back();
 	// }
-	for(int i=0;i<(int)v[current].size();i++){
-		int node = v[current][i];
-		if (parent[node]==0)
-		{
-			parent[node] = current;
-			check(node);
-		}
-	}
 	//그게 아니면 밑으로 내려가봄
 }
