@@ -64,23 +64,18 @@ int BellmanFord(int s) {
 		//insertItem(i, d[i]);
 	}
 	d[s] = 0;
-	for (int i = 1;i <= n;i++) {
+	for (int i = 0;i <= n;i++) {
 		for (int j = 0;j < m;j++) {
 			int u = edges[j].s;
 			int z = edges[j].e;
 			if (d[u] != INF && d[z] > d[u]+edges[j].w)
 			{
 				d[z] = d[u] + edges[j].w;
+				if (i == n) {
+					printf("-1");
+					return 0; //무한히 과거여행 가능
+				}
 			}
-		}
-	}
-	for (int i = 0;i < m;i++) {
-		int u = edges[i].s;
-		int z = edges[i].e;
-		if (d[u] != INF && d[z] > d[u] + edges[i].w)
-		{
-			printf("-1");
-			return 0; //무한히 과거여행 가능
 		}
 	}
 	return 1;
