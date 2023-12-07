@@ -1,14 +1,59 @@
-#include <iostream>
-#include <queue>
+#include <stdio.h>
+#include <stdlib.h>
 #define INF 200000
 
-using namespace std;
-
+typedef struct info {
+	int i, j, c;
+}info;
 int n;
 int adjArray[126][126];
 int d[126][126];
 int di[4] = {1, 0, -1, 0};
 int dj[4] = {0, 1, 0, -1};
+
+int hSize = 0;
+info min_heap[10001];
+void swap(info* a, info* b) {
+	info tmp = *a;
+	*a = *b;
+	*b = tmp;
+}
+
+void upHeap(int i) {
+	int j = i / 2;
+	while (i > 1) {
+		if (min_heap[i].c < min_heap[j].c) swap(min_heap + i, min_heap + j);
+		i = j;
+		j = i / 2;
+	}
+}
+void downHeap(int i) {
+	int j = i * 2;
+	while (j <= hSize) {
+		if (j+1 <= hSize && min_heap[j].c > min_heap[j + 1].c) j++;
+		if (min_heap[i].c > min_heap[j].c) swap(min_heap + i, min_heap + j);
+		i = j;
+		j = i * 2;
+	}
+}
+info removeMin() {
+	info rv = min_heap[1];
+	min_heap[1] = min_heap[hSize];
+	min_heap[hSize].i = 0;
+	min_heap[hSize].j = 0;
+	min_heap[hSize].c = INF;
+	hSize--;
+	downHeap(1);
+	//hSize--;
+	return rv;
+}
+
+void insertItem(int i, int j, int c) {
+	min_heap[++hSize].i = i;
+	min_heap[hSize].j = j;
+	min_heap[hSize].c = c;
+	upHeap(hSize);
+}
 
 void dijkstra()
 {
@@ -20,24 +65,22 @@ void dijkstra()
 		}
 	}
 	d[0][0] = adjArray[0][0];
-	priority_queue<pair<int, pair<int, int>>> pq;
-	pq.push({-d[0][0], {0, 0}});
-	while (pq.size())
+	insertItem(0,0,d[0][0]);
+	while (hSize)
 	{
-		pair cur = pq.top().second;
-		int cost = -1 * pq.top().first;
-		pq.pop();
+		info curInfo = removeMin();
+		int cost = curInfo.c;
 		for (int k = 0; k < 4; k++)
 		{
-			int ni = cur.first + di[k];
-			int nj = cur.second + dj[k];
+			int ni = curInfo.i + di[k];
+			int nj = curInfo.j + dj[k];
 			if (ni < 0 || ni >= n || nj < 0 || nj >= n)
 				continue;
 			int nCost = cost + adjArray[ni][nj];
 			if (d[ni][nj] > nCost)
 			{
 				d[ni][nj] = nCost;
-				pq.push({-nCost, {ni, nj}});
+				insertItem(ni,nj,nCost);
 			}
 		}
 	}
@@ -45,22 +88,20 @@ void dijkstra()
 
 int main()
 {
-	ios_base::sync_with_stdio(false);
-	cin.tie(0);
 	int cnt = 0;
 	while (++cnt)
 	{
-		cin >> n;
+		scanf("%d", &n);
 		if (!n)
 			return 0;
 		for (int i = 0; i < n; i++)
 		{
 			for (int j = 0; j < n; j++)
 			{
-				cin >> adjArray[i][j];
+				scanf("%d", &adjArray[i][j]);
 			}
 		}
 		dijkstra();
-		cout << "Problem " << cnt << ": " << d[n - 1][n - 1] << "\n";
+		printf("Problem %d: %d\n", cnt, d[n-1][n-1]);
 	}
 }
